@@ -6,6 +6,7 @@ import time
 
 
 class DisplayManager:
+    
     def __init__(self,name='Display', interval=0.2, size=20, on_update=None):
         self.queue = queue.Queue(size)
         self.name = name
@@ -19,8 +20,9 @@ class DisplayManager:
         # print('thread before start')
         self.thread.start()
         print('thread started')
-        cv.namedWindow(self.name)
+        # cv.namedWindow(self.name)
         
+    # thread inside loop function
     def update(self):
         img = None
         flag = False
@@ -28,23 +30,27 @@ class DisplayManager:
         while not self.queue.empty():
             img = self.queue.get()
             flag = True
+        
         # display last img
         if flag:
             if self.on_update:
                 img = self.on_update(img)
             
             cv.imshow(self.name, img)
-            cv.waitKey(1)
-    
+            cv.waitKey(10)
+        
+    # thread loop function
     def loop(self):
         # loop while not end with given interval of refresh
         while not self.end_flag:
             self.update()
             time.sleep(self.interval)
     
+    # call to put img on display queue 
     def show(self, img):
         self.queue.put(img)
     
+    # call for end threading
     def finish(self):
         self.end_flag = True
         
